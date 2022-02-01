@@ -9,12 +9,13 @@ const superagent = require('superagent')
 const nodeRedModule = require('node-red-module-parser')
 
 
-const port = (process.env.PORT || 80)
+const port = (process.env.PORT || 4874)
 const listenHost = (process.env.HOST || '0.0.0.0')
-const registryHost = (process.env.REGISTRY || 'registry:4873') 
+const registryHost = (process.env.REGISTRY || 'registry:4873')
+const mappedRegistryHost = 'localhost:4873';
 const keyword = (process.env.KEYWORD || "node-red")
 
-const url = "http://" + registryHost +  "/-/all"
+const url = "http://" + registryHost +  "/-/v1/search"
 
 const catalogue = {
   "name":"Ben's custom catalogue",
@@ -42,15 +43,17 @@ function update() {
 	superagent.get(url)
 	.end(async (err, res) => {
 		if (!err) {
-			const nodes = res.body;
-			var nodeNames = Object.keys(nodes);
+			const nodes = res.body.objects;
+			var nodeNames = nodes.map(node => node.package.name);
+            console.log(nodeNames);
 			const index = nodeNames.indexOf("_updated");
 			if (index > -1) {
 			  nodeNames.splice(index, 1);
 			}
 
 			for (const node in nodeNames) {
-				var n = nodes[nodeNames[node]];
+				var n = nodes[node].package;
+                console.log(n);
 				if (n.keywords) {
 					if (n.keywords.indexOf(keyword) != -1) {
 						try {
@@ -60,8 +63,9 @@ function update() {
 						  let latest = details.body['dist-tags'].latest
 						  let version = details.body.versions[latest]
 						  let tar = version.dist.tarball
-						  fs.mkdirSync(path.dirname(path.join("temp", nodeNames[node])))
-						  let tarPath = path.join('temp', nodeNames[node] + ".tgz")
+                          const sanitizedNodeName = nodeNames[node].replace(/[^a-zA-Z ]/g, "");
+						  fs.mkdirSync(path.dirname(path.join("temp", sanitizedNodeName)))
+						  let tarPath = path.join('temp', sanitizedNodeName + ".tgz")
 						  let tarRes = await superagent.get(tar).responseType('blob')
 						  fs.writeFileSync(tarPath, tarRes.body)
 						  let moduleDetails = nodeRedModule.examinTar(tarPath, "temp")
@@ -69,11 +73,11 @@ function update() {
 
 						  var entry = {
 								id: n.name,
-								version: n["dist-tags"].latest,
+								version: n.version,
 								description: n.description,
 								keywords: n.keywords,
-								updated_at: n.time.modified,
-								url: "http://" + registryHost + "/-/web/details/" + n.name
+								updated_at: n.date,
+								url: "http://" + mappedRegistryHost + "/-/web/detail/" + n.name
 							}
 
 							if (moduleDetails.types) {
@@ -114,7 +118,7 @@ app.get('/catalogue.json', cors(), (req, res, next) => {
 })
 
 // app.head('/catalogue.json', (req,res,next) => {
-	
+
 // })
 
 update()
