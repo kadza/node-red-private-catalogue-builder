@@ -30,3 +30,19 @@ fs.rmSync(tarPath) not defined
 https://github.com/Jarred-Sumner/git-peek/issues/14
 
 err Error: ENOENT: no such file or directory, mkdir 'temp/@private'
+
+
+npm ERR! FetchError: request to http://localhost:4873/@private%2fnode-red-contrib-komfovent failed, reason: connect ECONNREFUSED 127.0.0.1:4873
+https://stackoverflow.com/questions/64431235/connect-to-localhost-in-dockerfile-build
+
+https://knolleary.net/2018/06/01/creating-a-node-red-deployment-pipeline-to-ibm-cloud/
+
+Your flow credentials file is encrypted using a system-generated key.
+
+If the system-generated key is lost for any reason, your credentials
+file will not be recoverable, you will have to delete it and re-enter
+your credentials.
+
+You should set your own key using the 'credentialSecret' option in
+your settings file. Node-RED will then re-encrypt your credentials
+file using your chosen key the next time you deploy a change.
