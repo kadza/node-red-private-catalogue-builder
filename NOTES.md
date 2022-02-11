@@ -1,5 +1,6 @@
 I think I'll just make an image instead of cloning the repo
 
+Finally it wasn't necessary to do it
 It was necessary to add git and ssh configuration to make the build as there is an github npm dependency
 Taken from: https://sanderknape.com/2019/06/installing-private-git-repositories-npm-install-docker/
 
