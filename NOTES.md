@@ -47,3 +47,10 @@ your credentials.
 You should set your own key using the 'credentialSecret' option in
 your settings file. Node-RED will then re-encrypt your credentials
 file using your chosen key the next time you deploy a change.
+
+Node-red project
+- package-lock.json synchronization
+
+Homekit
+- docker host-network, linux only
+- homekit-persistence and its synchronization
